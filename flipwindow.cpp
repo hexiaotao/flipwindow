@@ -189,7 +189,7 @@ static void flipSurfaceBySkia(const sp<SurfaceControl>& sc) {
 
     SkBitmap bitmap;
 #ifdef USE_SKIA_LEGACY
-    bitmap.setConfig(SkBitmap::kARGB_8888_Config, outBuffer.width, outBuffer.width);
+    bitmap.setConfig(SkBitmap::kARGB_8888_Config, outBuffer.width, outBuffer.width, bytesCount);
 #else
     bitmap.setInfo(convertPixelFormat(outBuffer), bytesCount);
 #endif
