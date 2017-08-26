@@ -41,7 +41,7 @@
 #define LOG_TAG "bp_native"
 
 #define GET_DISPLAY_EVENT
-
+//#define USE_SKIA_LEGACY
 
 #include <cutils/log.h>
 #include <utils/Log.h>
@@ -143,6 +143,7 @@ static void flipSurfaceRGBA8(const sp<SurfaceControl>& sc) {
 }
 
 //-------------------------------------------------------------
+#ifndef USE_SKIA_LEGACY
 static inline SkImageInfo convertPixelFormat(const ANativeWindow_Buffer& buffer) {
     int                 fWidth;
     int                 fHeight;
@@ -174,6 +175,7 @@ static inline SkImageInfo convertPixelFormat(const ANativeWindow_Buffer& buffer)
 
     return SkImageInfo::Make(fWidth, fHeight, fColorType, fAlphaType);
 }
+#endif
 
 static void flipSurfaceBySkia(const sp<SurfaceControl>& sc) {
     uint32_t mProtectImageTexName;
@@ -186,7 +188,11 @@ static void flipSurfaceBySkia(const sp<SurfaceControl>& sc) {
     ssize_t bytesCount = outBuffer.stride * bytesPerPixel(outBuffer.format);
 
     SkBitmap bitmap;
+#ifdef USE_SKIA_LEGACY
+    bitmap.setConfig(SkBitmap::kARGB_8888_Config, outBuffer.width, outBuffer.width);
+#else
     bitmap.setInfo(convertPixelFormat(outBuffer), bytesCount);
+#endif
 
     if (outBuffer.width > 0 && outBuffer.height > 0) {
         bitmap.setPixels(outBuffer.bits);
